@@ -24,14 +24,15 @@ The color palettes are from Blake R. Mills [{MetBrewer}](https://github.com/Blak
 
 Load packages:
 ```{r}
-library(dplyr)
-library(ggplot2)
-library(glue)
-library(MetBrewer)
-library(MexBrewer)
-library(rayrender)
-library(rayshader)
-library(sf)
+library(dplyr) # A Grammar of Data Manipulation
+library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics
+library(glue) # Interpreted String Literals
+library(imager) # Working with images
+library(MetBrewer) # Color Palettes Inspired by Works at the Metropolitan Museum of Art
+library(MexBrewer) # Color Palettes Inspired by Works of Mexican Muralists
+library(rayrender) # Build and Raytrace 3D Scenes
+library(rayshader) # Create Maps and Visualize Data in 2D and 3D
+library(sf) # Simple Features for R
 ```
 
 Randomly sample numbers for the random seeds:
@@ -167,16 +168,30 @@ plot_gg(p,
 rgl::snapshot3d(glue("outputs/hexicles-{seed_1}-{seed_2}.png"),
                 fmt = 'png',
                 webshot = TRUE,
-                width = 1500,
-                height = 1500)
+                width = 2100,
+                height = 2100)
 
 # Close rgl device
 rgl::rgl.close()
 ```
 
-```{r echo=FALSE}
+```{r include=FALSE}
+# Read named image
+im <- imager::load.image(glue::glue(here::here(), "/outputs/hexicles-{seed_1}-{seed_2}.png"))
+```
+
+```{r include=FALSE}
+im <- imager::imsub(im,x > 450 & x < 1700, y > 390 & y < 1640)
+```
+
+```{r include=FALSE}
+imager::save.image(im, file = glue::glue(here::here(), "/outputs/hexicles-{seed_1}-{seed_2}.png"))
+```
+
+```{r echo=FALSE, out.width="500px"}
 # Display image
 knitr::include_graphics(glue("outputs/hexicles-{seed_1}-{seed_2}.png"))
 ```
+
 
 

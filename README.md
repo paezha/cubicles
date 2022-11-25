@@ -22,7 +22,7 @@ own [{MexBrewer}](https://paezha.github.io/MexBrewer/) collection.
 Load packages:
 
 ``` r
-library(dplyr)
+library(dplyr) # A Grammar of Data Manipulation
 #> 
 #> Attaching package: 'dplyr'
 #> The following objects are masked from 'package:stats':
@@ -31,23 +31,39 @@ library(dplyr)
 #> The following objects are masked from 'package:base':
 #> 
 #>     intersect, setdiff, setequal, union
-library(ggplot2)
-library(glue)
-library(MetBrewer)
-library(MexBrewer)
+library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics
+library(glue) # Interpreted String Literals
+library(imager) # Working with images
+#> Loading required package: magrittr
+#> 
+#> Attaching package: 'imager'
+#> The following object is masked from 'package:magrittr':
+#> 
+#>     add
+#> The following objects are masked from 'package:stats':
+#> 
+#>     convolve, spectrum
+#> The following object is masked from 'package:graphics':
+#> 
+#>     frame
+#> The following object is masked from 'package:base':
+#> 
+#>     save.image
+library(MetBrewer) # Color Palettes Inspired by Works at the Metropolitan Museum of Art
+library(MexBrewer) # Color Palettes Inspired by Works of Mexican Muralists
 #> Registered S3 method overwritten by 'MexBrewer':
 #>   method        from     
 #>   print.palette MetBrewer
-library(rayrender)
+library(rayrender) # Build and Raytrace 3D Scenes
 #> Warning: package 'rayrender' was built under R version 4.2.2
 #> 
 #> Attaching package: 'rayrender'
 #> The following object is masked from 'package:ggplot2':
 #> 
 #>     arrow
-library(rayshader)
+library(rayshader) # Create Maps and Visualize Data in 2D and 3D
 #> Warning: package 'rayshader' was built under R version 4.2.2
-library(sf)
+library(sf) # Simple Features for R
 #> Linking to GEOS 3.9.1, GDAL 3.4.3, PROJ 7.2.1; sf_use_s2() is TRUE
 ```
 
@@ -196,11 +212,11 @@ plot_gg(p,
 rgl::snapshot3d(glue("outputs/hexicles-{seed_1}-{seed_2}.png"),
                 fmt = 'png',
                 webshot = TRUE,
-                width = 1500,
-                height = 1500)
+                width = 2100,
+                height = 2100)
 
 # Close rgl device
 rgl::rgl.close()
 ```
 
-![](outputs/hexicles-131033-525302.png)<!-- -->
+<img src="outputs/hexicles-73405-22519.png" width="500px" />

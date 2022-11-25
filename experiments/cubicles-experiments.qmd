@@ -1,0 +1,268 @@
+---
+title: "cublicles-experimental"
+author: "AP"
+format: html
+---
+
+## Cubicles
+
+Inspired to try something with packages {sf} and {rayshader} after seeing this [beautiful creation](https://mastodon.online/@nrennie@fosstodon.org/109389979155033662) by [Nicola Rennie](https://mastodon.online/@nrennie@fosstodon.org)
+
+## Preliminaries
+
+Load packages:
+```{r}
+library(dplyr)
+library(ggplot2)
+library(glue)
+library(MetBrewer)
+library(MexBrewer)
+library(rayrender)
+library(rayshader)
+library(sf)
+```
+
+Randomly sample a number for the random seed:
+```{r}
+seed_1 <- sample.int(1, n = 1000000)
+seed_2 <- sample.int(1, n = 1000000)
+```
+
+## Create tessellation
+
+Define the parameters for the canvas, i.e., the coordinates of the left bottom corner (`x_o` and `y_o`) and the size in x (`d_x`) and y (`d_y`): 
+```{r}
+set.seed(seed_1)
+
+x_o <- 1
+y_o <- 1
+d_x <- sample(2:5, 1)
+d_y <- d_x
+```
+
+Create a polygon for the canvas:
+```{r}
+# Create a matrix with the coordinates of the polygon that becomes the canvas
+canvas <- matrix(c(x_o, y_o, # bottom left corner
+                   x_o, y_o + d_y, # top left corner
+                   x_o + d_x, y_o +d_y, # top right corner 
+                   x_o + d_x, y_o, # bottom right corner
+                   x_o, y_o), # Return to bottom left
+                 ncol = 2,
+                 byrow = TRUE)
+
+
+# Convert coordinates to polygons and then to simple features
+canvas <- data.frame(geometry = st_polygon(list(canvas)) |> 
+                       st_sfc()) |> 
+  st_as_sf()
+```
+
+Randomly sample a number for the random seed:
+```{r}
+seed_1 <- sample.int(1, n = 1000000)
+seed_2 <- sample.int(1, n = 1000000)
+```
+
+## Squares
+
+Create tessellation:
+```{r}
+# Set seed
+set.seed(seed_1)
+
+sq_cubicles <- canvas |>
+  st_make_grid(cellsize = 1)
+
+sq_cubicles <- data.frame(c = sample(1:10, 
+                                     length(sq_cubicles), 
+                                     replace = TRUE),
+                          geometry = sq_cubicles) |>
+  st_sf()
+```
+
+Buffer:
+```{r}
+# Set seed
+set.seed(seed_2)
+
+sq_cubicles_2 <- sq_cubicles |>
+  st_buffer(dist = -0.15) |>
+  mutate(c = sample(1:10, 
+                    nrow(sq_cubicles), 
+                    replace = TRUE))
+```
+
+Carve the outer boxes:
+```{r}
+sq_cubicles <- sq_cubicles |>
+  mutate(geometry = st_difference(sq_cubicles$geometry,
+                                  st_union(sq_cubicles_2$geometry)))
+```
+
+Bind outer and inner boxes:
+```{r}
+sq_cubicles <- rbind(sq_cubicles |>
+                       mutate(type = "outer"),
+                     sq_cubicles_2 |>
+                       mutate(type = "inner"))
+```
+
+Plot:
+```{r}
+# Set seed
+set.seed(seed_1)
+
+# Select collection of color palettes
+edition <- sample(c("MexBrewer", "MetBrewer"), 1)
+
+if(edition=="MexBrewer"){
+  # Randomly select a color palette (MexBrewer Edition)
+  palette_name <- sample(c("Alacena", "Atentado", "Aurora", "Concha", "Frida", "Revolucion", "Ronda", "Tierra"), 1)
+  # col_palette <- mex.brewer(palette_name, n = 25)
+  col_palette <- mex.brewer(palette_name)
+  
+}else{
+  # Randomly select a color palette (MetBrewer Edition)
+  palette_name <- sample(c("Austria", "Cassatt1", "Cassatt2", "Cross", "Degas", "Derain", "Egypt", "Gauguin", "Greek", "Hiroshige", "Hokusai1", "Hokusai2", "Hokusai3", "Homer1", "Homer2", "Ingres", "Isfahan1", "Isfahan2", "Juarez", "Klimt", "Lakota", "Manet", "Monet", "Moreau", "Morgenstern", "Nattier", "Navajo", "NewKingdom", "Nizami", "OKeeffe1", "OKeeffe2", "Peru1", "Peru2", "Pillement", "Pissaro", "Redon", "Renoir", "Robert", "Signac", "Stevens", "Tara", "Thomas", "Tiepolo", "Troy", "Tsimshian", "VanGogh1", "VanGogh2", 'VanGogh3', "Veronese", "Wissing"), 1)
+  col_palette <- met.brewer(palette_name)
+}
+
+# Create ggplot object
+p <- ggplot() +
+  geom_sf(data = sq_cubicles,
+          aes(fill = c),
+          color = NA) +
+  scale_fill_gradientn(colors = col_palette) +
+  theme(legend.position = "none",
+        axis.text = element_text(color = "white"),
+        panel.background = element_rect(fill = "white"),
+        axis.ticks = element_line(color = "white"))
+```
+
+```{r}
+plot_gg(p,
+        #width = 8,
+        #height = 8,
+        phi = 90,
+        theta = 0,
+        height_aes = "fill",
+        raytrace = TRUE,
+        windowsize = c(800, 800))
+
+# Save image
+rgl::snapshot3d(glue("cubicles-{seed_1}-{seed_2}.png"),
+                fmt = 'png',
+                webshot = TRUE,
+                width = 1500,
+                height = 1500)
+
+rgl::rgl.close()
+```
+
+```{r echo=FALSE}
+# Display image
+knitr::include_graphics(glue("cubicles-{seed_1}-{seed_2}.png"))
+```
+
+## Hexagons
+
+Create tessellation:
+```{r}
+# Set seed
+set.seed(seed_2)
+
+hex_cubicles <- canvas |>
+  st_make_grid(cellsize = 1,
+               square = FALSE)
+
+hex_cubicles <- data.frame(c = sample(1:10, 
+                                      length(hex_cubicles), 
+                                      replace = TRUE),
+                           geometry = hex_cubicles) |>
+  st_sf()
+```
+
+Buffer:
+```{r}
+# Set seed
+set.seed(seed_1)
+
+hex_cubicles_2 <- hex_cubicles |>
+  st_buffer(dist = -0.15) |>
+  mutate(c = sample(1:10, 
+                    nrow(hex_cubicles), 
+                    replace = TRUE))
+```
+
+Carve the outer boxes:
+```{r}
+hex_cubicles <- hex_cubicles |>
+  mutate(geometry = st_difference(hex_cubicles$geometry,
+                                  st_union(hex_cubicles_2$geometry)))
+```
+
+Bind outer and inner boxes:
+```{r}
+hex_cubicles <- rbind(hex_cubicles |>
+                        mutate(type = "outer"),
+                      hex_cubicles_2 |>
+                        mutate(type = "inner"))
+```
+
+Plot:
+```{r}
+# Set seed
+set.seed(seed_2)
+
+# Select collection of color palettes
+edition <- sample(c("MexBrewer", "MetBrewer"), 1)
+
+if(edition=="MexBrewer"){
+  # Randomly select a color palette (MexBrewer Edition)
+  palette_name <- sample(c("Alacena", "Atentado", "Aurora", "Concha", "Frida", "Revolucion", "Ronda", "Tierra"), 1)
+  # col_palette <- mex.brewer(palette_name, n = 25)
+  col_palette <- mex.brewer(palette_name)
+  
+}else{
+  # Randomly select a color palette (MetBrewer Edition)
+  palette_name <- sample(c("Austria", "Cassatt1", "Cassatt2", "Cross", "Degas", "Derain", "Egypt", "Gauguin", "Greek", "Hiroshige", "Hokusai1", "Hokusai2", "Hokusai3", "Homer1", "Homer2", "Ingres", "Isfahan1", "Isfahan2", "Juarez", "Klimt", "Lakota", "Manet", "Monet", "Moreau", "Morgenstern", "Nattier", "Navajo", "NewKingdom", "Nizami", "OKeeffe1", "OKeeffe2", "Peru1", "Peru2", "Pillement", "Pissaro", "Redon", "Renoir", "Robert", "Signac", "Stevens", "Tara", "Thomas", "Tiepolo", "Troy", "Tsimshian", "VanGogh1", "VanGogh2", 'VanGogh3', "Veronese", "Wissing"), 1)
+  col_palette <- met.brewer(palette_name)
+}
+
+# Create ggplot object
+p <- ggplot() +
+  geom_sf(data = hex_cubicles,
+          aes(fill = c),
+          color = NA) +
+  scale_fill_gradientn(colors = col_palette) +
+  theme(legend.position = "none",
+        axis.text = element_text(color = "white"),
+        panel.background = element_rect(fill = "white"),
+        axis.ticks = element_line(color = "white"))
+```
+
+```{r}
+plot_gg(p,
+        phi = 90,
+        theta = 0,
+        height_aes = "fill",
+        raytrace = TRUE,
+        windowsize = c(800, 800))
+
+# Save image
+rgl::snapshot3d(glue("hexicles-{seed_1}-{seed_2}.png"),
+                fmt = 'png',
+                webshot = TRUE,
+                width = 1500,
+                height = 1500)
+
+rgl::rgl.close()
+```
+
+```{r echo=FALSE}
+# Display image
+knitr::include_graphics(glue("hexicles-{seed_1}-{seed_2}.png"))
+```
+
+

@@ -219,4 +219,4 @@ rgl::snapshot3d(glue("outputs/hexicles-{seed_1}-{seed_2}.png"),
 rgl::rgl.close()
 ```
 
-<img src="outputs/hexicles-851149-547202.png" width="500px" />
+<img src="outputs/hexicles-33538-217703.png" width="500px" />

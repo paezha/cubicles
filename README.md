@@ -55,16 +55,14 @@ library(MexBrewer) # Color Palettes Inspired by Works of Mexican Muralists
 #>   method        from     
 #>   print.palette MetBrewer
 library(rayrender) # Build and Raytrace 3D Scenes
-#> Warning: package 'rayrender' was built under R version 4.2.2
 #> 
 #> Attaching package: 'rayrender'
 #> The following object is masked from 'package:ggplot2':
 #> 
 #>     arrow
 library(rayshader) # Create Maps and Visualize Data in 2D and 3D
-#> Warning: package 'rayshader' was built under R version 4.2.2
 library(sf) # Simple Features for R
-#> Linking to GEOS 3.9.1, GDAL 3.4.3, PROJ 7.2.1; sf_use_s2() is TRUE
+#> Linking to GEOS 3.9.3, GDAL 3.5.2, PROJ 8.2.1; sf_use_s2() is TRUE
 ```
 
 Randomly sample numbers for the random seeds:
@@ -176,13 +174,13 @@ edition <- sample(c("MexBrewer", "MetBrewer"), 1)
 
 if(edition=="MexBrewer"){
   # Randomly select a color palette (MexBrewer Edition)
-  palette_name <- sample(c("Alacena", "Atentado", "Aurora", "Concha", "Frida", "Revolucion", "Ronda", "Tierra"), 1)
+  palette_name <- sample(c("Alacena", "Atentado", "Aurora", "Concha", "Frida", "Huida", "Naturaleza", "Ofrenda", "Revolucion", "Ronda", "Taurus1", "Taurus2", "Tierra", "Vendedora"), 1)
   # col_palette <- mex.brewer(palette_name, n = 25)
   col_palette <- mex.brewer(palette_name)
   
 }else{
   # Randomly select a color palette (MetBrewer Edition)
-  palette_name <- sample(c("Austria", "Cassatt1", "Cassatt2", "Cross", "Degas", "Derain", "Egypt", "Gauguin", "Greek", "Hiroshige", "Hokusai1", "Hokusai2", "Hokusai3", "Homer1", "Homer2", "Ingres", "Isfahan1", "Isfahan2", "Juarez", "Klimt", "Lakota", "Manet", "Monet", "Moreau", "Morgenstern", "Nattier", "Navajo", "NewKingdom", "Nizami", "OKeeffe1", "OKeeffe2", "Peru1", "Peru2", "Pillement", "Pissaro", "Redon", "Renoir", "Robert", "Signac", "Stevens", "Tara", "Thomas", "Tiepolo", "Troy", "Tsimshian", "VanGogh1", "VanGogh2", 'VanGogh3', "Veronese", "Wissing"), 1)
+  palette_name <- sample(c("Archambault", "Austria", "Benedictus", "Cassatt1", "Cassatt2", "Cross", "Degas", "Demuth", "Derain", "Egypt", "Gauguin", "Greek", "Hiroshige", "Hokusai1", "Hokusai2", "Hokusai3", "Homer1", "Homer2", "Ingres", "Isfahan1", "Isfahan2", "Java", "Johnson", "Juarez", "Kandinsky", "Klimt", "Lakota", "Manet", "Monet", "Moreau", "Morgenstern", "Nattier", "Navajo", "NewKingdom", "Nizami", "OKeeffe1", "OKeeffe2", "Paquin", "Peru1", "Peru2", "Pillement", "Pissaro", "Redon", "Renoir", "Signac", "Tam", "Tara", "Thomas", "Tiepolo", "Troy", "Tsimshian", "VanGogh1", "VanGogh2", 'VanGogh3', "Veronese", "Wissing"), 1)
   col_palette <- met.brewer(palette_name)
 }
 
@@ -219,4 +217,4 @@ rgl::snapshot3d(glue("outputs/hexicles-{seed_1}-{seed_2}.png"),
 rgl::rgl.close()
 ```
 
-<img src="outputs/hexicles-33538-217703.png" width="500px" />
+<img src="outputs/hexicles-541737-38050.png" width="500px" />
